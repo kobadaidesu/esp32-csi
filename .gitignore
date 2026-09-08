@@ -1,0 +1,8 @@
+/build/
+/eim.log
+/eim_config.toml
+/managed_components/
+/dependencies.lock
+/sdkconfig
+/sdkconfig.old
+.DS_Store

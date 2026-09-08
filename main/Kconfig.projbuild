@@ -1,0 +1,32 @@
+menu "Wi-Fi CSI configuration"
+
+    config CSI_WIFI_SSID
+        string "2.4 GHz Wi-Fi SSID"
+        default ""
+        help
+            SSID of the 2.4 GHz Wi-Fi network to connect to.
+
+    config CSI_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+        help
+            Password of the Wi-Fi network. This value is stored in sdkconfig,
+            which is excluded from Git by this project.
+
+    config CSI_PRINT_EVERY
+        int "Print every Nth CSI frame"
+        range 1 10000
+        default 20
+        help
+            Reduce serial output by printing only one frame out of every N
+            received CSI frames.
+
+    config CSI_PRINT_BYTES
+        int "CSI bytes to print per frame"
+        range 1 512
+        default 32
+        help
+            Maximum number of signed CSI bytes to print for each selected
+            frame.
+
+endmenu
