@@ -106,6 +106,45 @@ CSI: RSSI=-48 len=128 first_word_invalid=0 data=[-3,12,-4,11,...]
 除外する必要があります。表示は生データの確認を目的としているため、その4バイトも
 そのまま出力します。
 
+## リアルタイムグラフ
+
+`idf.py monitor` を実行中なら、先に `Ctrl + ]` で終了します。同じシリアルポートを
+モニターとグラフで同時に開くことはできません。
+
+リポジトリのルートでPython環境と依存ライブラリを準備します。初回だけ必要です。
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+ESP32-S3を接続した状態でグラフを起動します。USBシリアルポートが1つなら自動選択されます。
+
+```bash
+python -m tools.plot_csi
+```
+
+複数のUSBシリアル機器がある場合はポートを指定します。
+
+```bash
+python -m tools.plot_csi /dev/cu.usbmodem1101
+```
+
+グラフ上段には次の2本が表示されます。
+
+- `Mean amplitude`: 各I/Qペアを `sqrt(I² + Q²)` へ変換した平均振幅
+- `Frame change`: 前フレームからのサブキャリア振幅変化の平均値
+
+人がルーターとESP32-S3の間を動くと、特に `Frame change` が跳ねる様子を確認できます。
+下段には、最後に受信したフレームのサブキャリア別振幅が表示されます。
+
+利用可能なポートだけを確認する場合は次を実行します。
+
+```bash
+python -m tools.plot_csi --list-ports
+```
+
 ## 動作確認
 
 ルーターとESP32-S3を1〜3 mほど離し、その間を歩いてCSI値の変化を観察します。
@@ -114,8 +153,8 @@ CSI: RSSI=-48 len=128 first_word_invalid=0 data=[-3,12,-4,11,...]
 Router  ~~~~~~~~~~~~~  person  ~~~~~~~~~~~~~  ESP32-S3
 ```
 
-この段階で見ているのは生データです。値が流れたことだけでは人検知にはなりません。
-次の段階でI/Qから振幅を計算し、時間方向の分散や標準偏差を使って動きを判定します。
+グラフの変化は動きの影響を観察するための指標です。この段階では固定しきい値による
+人検知は行っていません。環境ごとの静止時データを集めた後、変化量の基準を決めます。
 
 ## 値が流れない場合
 
@@ -123,6 +162,7 @@ Router  ~~~~~~~~~~~~~  person  ~~~~~~~~~~~~~  ESP32-S3
 - USBポートが現れなければ、充電専用ではないUSBケーブルへ交換する
 - 同じWi-Fi上で通信を発生させ、ESP32-S3が受信するパケットを増やす
 - `CONFIG_ESP_WIFI_CSI_ENABLED=y` が `sdkconfig.defaults` にあることを確認する
+- グラフでポート使用中のエラーが出たら、`idf.py monitor` を終了する
 
 APIの詳細は[ESP-IDF Wi-FiドライバーのCSI説明](https://docs.espressif.com/projects/esp-idf/en/v6.1/esp32s3/api-guides/wifi.html#wi-fi-channel-state-information)と
 [Espressifのesp-csiサンプル](https://github.com/espressif/esp-csi)を参照してください。
