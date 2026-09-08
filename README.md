@@ -145,6 +145,20 @@ python -m tools.plot_csi /dev/cu.usbmodem1101
 python -m tools.plot_csi --list-ports
 ```
 
+## RuViewで可視化する
+
+[RuView](https://github.com/ruvnet/RuView)のESP32-S3用ファームウェアと
+sensing-serverを使うと、ブラウザでCSI、動き、在室判定を確認できます。RuViewの
+ファームウェアを書き込むと、このリポジトリのファームウェアはいったん置き換わります。
+
+2026年9月8日に、ESP32-S3（8 MB flash / 8 MB PSRAM）、RuView firmware 0.8.8、
+macOSで実データの受信まで確認しました。詳しい手順と確認できた範囲は
+[RuView実機テスト](docs/ruview.md)に記録しています。
+
+1台のESP32-S3で確認できる中心的な情報はCSIの変化、在室、動きです。学習済みの
+姿勢モデルと複数地点のセンサーがない状態で表示される人数や骨格は、実際の人の姿を
+測定したものとして扱えません。
+
 ## 動作確認
 
 ルーターとESP32-S3を1〜3 mほど離し、その間を歩いてCSI値の変化を観察します。
