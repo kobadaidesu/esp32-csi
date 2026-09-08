@@ -5,4 +5,7 @@
 /dependencies.lock
 /sdkconfig
 /sdkconfig.old
+/.venv/
+__pycache__/
+*.py[cod]
 .DS_Store
