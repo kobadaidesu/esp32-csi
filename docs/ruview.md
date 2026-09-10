@@ -114,6 +114,15 @@ python firmware/esp32-csi-node/provision.py \
   --node-id 1
 ```
 
+[Aterm公式案内](https://www.aterm.jp/support/guide/category/stable/mode/102/main.html)では、
+初期SSIDの末尾`-g`が2.4 GHz、末尾`-a`が5 GHzです。
+ESP32-S3で接続失敗理由`201`とRSSI `-128`が続く場合は、5 GHz側SSIDを指定して
+いないか確認します。
+
+Wi-Fiを切り替えた直後はMacのDHCPアドレスが変わることがあります。ESP32のログに
+`sendto ENOMEM`が続く場合は`ipconfig getifaddr en0`を再実行し、新しいIPを
+`--target-ip`へ設定してプロビジョニングし直します。
+
 ## 5. sensing-serverを起動する
 
 Dockerを使わない場合はRustでMac用バイナリを作れます。
@@ -124,15 +133,15 @@ cd v2
 cargo build --release -p wifi-densepose-sensing-server
 ```
 
-`ifconfig en0`のnetmaskからLANのCIDRを確認し、その範囲だけUDP受信を許可します。
-家庭用LANが`192.168.1.0/24`の場合の例です。
+ESP32の起動ログにある`Got IP`からESP32自身のIPを確認し、その1台だけを
+`--udp-allow`で許可します。ESP32のIPが`192.168.1.50`の場合の例です。
 
 ```bash
 ./target/release/sensing-server \
   --source esp32 \
   --udp-port 5005 \
   --udp-bind 0.0.0.0 \
-  --udp-allow 192.168.1.0/24 \
+  --udp-allow 192.168.1.50/32 \
   --http-port 3000 \
   --ws-port 3001 \
   --ui-path ../ui \
